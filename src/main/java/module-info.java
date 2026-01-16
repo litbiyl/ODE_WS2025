@@ -1,8 +1,6 @@
 module at.fhtw.rickandmorty {
-    requires javafx.controls;
-    requires javafx.fxml;
+    requires java.desktop;
 
-
-    opens at.fhtw.rickandmorty to javafx.fxml;
     exports at.fhtw.rickandmorty;
+    exports at.fhtw.rickandmorty.network;
 }

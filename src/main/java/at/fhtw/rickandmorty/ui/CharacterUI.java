@@ -4,16 +4,23 @@ import at.fhtw.rickandmorty.series.Character;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
-import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class CharacterUI {
-    public void openCharacterWindow(Character c) {
+    public void openCharacterWindow(Character c, List<String> style) {
         Stage charStage = new Stage();
         charStage.setTitle("Character Sheet");
+
+        ImageView charImage = new ImageView();
+        charImage.setFitWidth(100);
+        charImage.setFitHeight(100);
+        charImage.setPreserveRatio(true);
+        charImage.setImage(new Image(c.getImage(), false));
 
         Label lblName = new Label("Name: " + c.getName());
         Label lblStatus = new Label("Status: " + c.getStatus());
@@ -23,10 +30,11 @@ public class CharacterUI {
         Label lblLocation = new Label("Location: " + c.getLocation().getName());
         Label lblEpisodes = new Label("Episodes: " + c.getEpisode());
 
-        VBox sheetBox = new VBox(10, lblName, lblStatus, lblSpecies, lblGender, lblOrigin, lblLocation, lblEpisodes);
+        VBox sheetBox = new VBox(10, charImage, lblName, lblStatus, lblSpecies, lblGender, lblOrigin, lblLocation, lblEpisodes);
         sheetBox.setPadding(new Insets(10));
 
         Scene charScene = new Scene(sheetBox, 300, 400);
+        charScene.getStylesheets().addAll(style);
         charStage.setScene(charScene);
         charStage.show();
     }

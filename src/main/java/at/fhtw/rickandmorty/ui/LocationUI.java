@@ -7,8 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class LocationUI {
-    public void openLocationWindow(Location l) {
+    public void openLocationWindow(Location l, List<String> style) {
         Stage locStage = new Stage();
         locStage.setTitle("Location Sheet");
 
@@ -21,6 +23,7 @@ public class LocationUI {
         sheetBox.setPadding(new Insets(10));
 
         Scene locScene = new Scene(sheetBox, 300, 200);
+        locScene.getStylesheets().addAll(style);
         locStage.setScene(locScene);
         locStage.show();
     }

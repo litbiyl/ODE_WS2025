@@ -7,8 +7,10 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.List;
+
 public class EpisodeUI {
-    public void openEpisodeWindow(Episode c) {
+    public void openEpisodeWindow(Episode c, List<String> style) {
         Stage epStage = new Stage();
         epStage.setTitle("Episode Sheet");
 
@@ -21,6 +23,7 @@ public class EpisodeUI {
         sheetBox.setPadding(new Insets(10));
 
         Scene epScene = new Scene(sheetBox, 300, 200);
+        epScene.getStylesheets().addAll(style);
         epStage.setScene(epScene);
         epStage.show();
     }

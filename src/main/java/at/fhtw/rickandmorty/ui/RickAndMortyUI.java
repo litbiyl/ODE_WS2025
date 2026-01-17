@@ -231,7 +231,7 @@ public class RickAndMortyUI extends BorderPane
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Character character = row.getItem();
                     CharacterUI characterUI = new CharacterUI();
-                    characterUI.openCharacterWindow(character);
+                    characterUI.openCharacterWindow(character, this.getStylesheets());
                 }
             });
 
@@ -245,7 +245,7 @@ public class RickAndMortyUI extends BorderPane
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Episode episode = row.getItem();
                     EpisodeUI episodeUI = new EpisodeUI();
-                    episodeUI.openEpisodeWindow(episode);
+                    episodeUI.openEpisodeWindow(episode, this.getStylesheets());
                 }
             });
 
@@ -259,7 +259,7 @@ public class RickAndMortyUI extends BorderPane
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Location location = row.getItem();
                     LocationUI locationUI = new LocationUI();
-                    locationUI.openLocationWindow(location);
+                    locationUI.openLocationWindow(location, this.getStylesheets());
                 }
             });
 

@@ -13,12 +13,12 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
 
 import java.util.List;
 
@@ -224,6 +224,47 @@ public class RickAndMortyUI extends BorderPane
             });
         });
 
+        charTable.setRowFactory(tv -> {
+            TableRow<Character> row = new TableRow<>();
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Character character = row.getItem();
+                    CharacterUI characterUI = new CharacterUI();
+                    characterUI.openCharacterWindow(character);
+                }
+            });
+
+            return row;
+        });
+
+        epTable.setRowFactory(tv -> {
+            TableRow<Episode> row = new TableRow<>();
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Episode episode = row.getItem();
+                    EpisodeUI episodeUI = new EpisodeUI();
+                    episodeUI.openEpisodeWindow(episode);
+                }
+            });
+
+            return row;
+        });
+
+        locTable.setRowFactory(tv -> {
+            TableRow<Location> row = new TableRow<>();
+
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    Location location = row.getItem();
+                    LocationUI locationUI = new LocationUI();
+                    locationUI.openLocationWindow(location);
+                }
+            });
+
+            return row;
+        });
     }
 
 
@@ -304,4 +345,5 @@ public class RickAndMortyUI extends BorderPane
             entities.clear();
         }
     }
+
 }

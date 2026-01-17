@@ -55,7 +55,7 @@ public class RickAndMortyUI extends BorderPane
         ChoiceBox<String> statusFilter = new ChoiceBox<>();
         statusFilter.getItems().addAll("All", "Alive", "Dead", "unknown");
         statusFilter.setValue("All");
-        Label statusLabel = new Label("Status");
+        Label statusLabel = new Label("Character Status");
 
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
@@ -228,7 +228,7 @@ public class RickAndMortyUI extends BorderPane
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Character character = row.getItem();
                     CharacterUI characterUI = new CharacterUI();
-                    characterUI.openCharacterWindow(character, this.getStylesheets());
+                    characterUI.openCharacterWindow(character, epData, this.getStylesheets());
                 }
             });
 
@@ -242,7 +242,7 @@ public class RickAndMortyUI extends BorderPane
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Episode episode = row.getItem();
                     EpisodeUI episodeUI = new EpisodeUI();
-                    episodeUI.openEpisodeWindow(episode, this.getStylesheets());
+                    episodeUI.openEpisodeWindow(episode, charData, this.getStylesheets());
                 }
             });
 
@@ -256,7 +256,7 @@ public class RickAndMortyUI extends BorderPane
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Location location = row.getItem();
                     LocationUI locationUI = new LocationUI();
-                    locationUI.openLocationWindow(location, this.getStylesheets());
+                    locationUI.openLocationWindow(location, charData, this.getStylesheets());
                 }
             });
 

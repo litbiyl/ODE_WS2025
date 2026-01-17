@@ -1,6 +1,7 @@
 package at.fhtw.rickandmorty.mapper;
 
 import at.fhtw.rickandmorty.series.Location;
+import at.fhtw.rickandmorty.series.World;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,11 +9,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 
-public class LocationSerde {
+public class LocationSerde implements Serde<Location> {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    public Location deserializeLocation(String json) {
+    public Location deserializeJson(String json) {
         try {
             return mapper.readValue(json, Location.class);
         } catch(JsonProcessingException e) {
@@ -23,7 +24,7 @@ public class LocationSerde {
         }
     }
 
-    public List<Location> deserializeLocationList(String json) {
+    public List<Location> deserializeJsonList(String json) {
         try {
             JsonNode results = mapper.readTree(json).get("results");
             return mapper.readerForListOf(Location.class).readValue(results);

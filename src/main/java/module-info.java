@@ -4,6 +4,7 @@ module at.fhtw.rickandmorty {
     requires com.fasterxml.jackson.databind;
     requires java.desktop;
     requires com.fasterxml.jackson.core;
+    //requires at.fhtw.rickandmorty;
 
     opens at.fhtw.rickandmorty.series to com.fasterxml.jackson.databind;
     opens at.fhtw.rickandmorty.mapper to com.fasterxml.jackson.databind;

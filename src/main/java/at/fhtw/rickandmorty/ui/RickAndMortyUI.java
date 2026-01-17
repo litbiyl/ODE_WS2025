@@ -1,10 +1,12 @@
 package at.fhtw.rickandmorty.ui;
 
-import at.fhtw.rickandmorty.mapper.CharacterSerde;
-import at.fhtw.rickandmorty.mapper.PageDataSerde;
+import at.fhtw.rickandmorty.mapper.*;
 import at.fhtw.rickandmorty.network.PageData;
 import at.fhtw.rickandmorty.network.TCPClient;
 import at.fhtw.rickandmorty.series.Character;
+import at.fhtw.rickandmorty.series.Episode;
+import at.fhtw.rickandmorty.series.Location;
+import at.fhtw.rickandmorty.series.World;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,7 +23,10 @@ import static at.fhtw.rickandmorty.network.HTTPResponse.extractJson;
 
 public class RickAndMortyUI extends BorderPane
 {
-    CharacterSerde charSerde = new CharacterSerde();
+    Serde<Character> charSerde = new CharacterSerde();
+    Serde<Episode> epSerde = new EpisodeSerde();
+    Serde<Location> locSerde = new LocationSerde();
+
     PageDataSerde pageSerde = new PageDataSerde();
 
     private final TableView<Character> charTable = new TableView<>();
@@ -87,7 +92,7 @@ public class RickAndMortyUI extends BorderPane
 
         charTable.getColumns().addAll(charIdCol, charNameCol, charStatusCol, charSpeciesCol, charGenderCol, charOriginCol, charLocationCol);
         charTable.setItems(charData);
-        charTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        charTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         charTab.setContent(charTable);
 
@@ -108,7 +113,7 @@ public class RickAndMortyUI extends BorderPane
 
         epTable.getColumns().addAll(epIdCol, epEpisodeCol, epNameCol, epAirDateCol);
         epTable.setItems(epData);
-        epTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        epTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         epTab.setContent(epTable);
 
@@ -132,7 +137,7 @@ public class RickAndMortyUI extends BorderPane
 
         locTable.getColumns().addAll(locIdCol, locNameCol, locTypeCol, locDimensionCol, locResidentsCol);
         locTable.setItems(locData);
-        locTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        locTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         locTab.setContent(locTable);
 
@@ -148,13 +153,13 @@ public class RickAndMortyUI extends BorderPane
     private void loadInitialData() {
         int port = 443;
         String baseURL = "rickandmortyapi.com";
-        String characterPath = "/api/character";
-        String episodePath   = "/api/episode";
-        String locationPath  = "/api/location";
+        String charPath = "/api/character";
+        String epPath   = "/api/episode";
+        String locPath  = "/api/location";
 
         Thread charThread = new Thread(() -> {
             try {
-                fetchPage(baseURL, port, characterPath);
+                fetchPage(baseURL, port, charPath, charData, charSerde);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -164,7 +169,7 @@ public class RickAndMortyUI extends BorderPane
         charThread.start();
     }
 
-    private void fetchPage(String baseURL, int port, String path) {
+    private <T extends World> void fetchPage(String baseURL, int port, String path, ObservableList<T> oList, Serde<T> serde) {
 
         String response = TCPClient.get(baseURL, port, path);
         String json = extractJson(response);
@@ -175,9 +180,9 @@ public class RickAndMortyUI extends BorderPane
         PageData meta = pageSerde.deserializePageData(json);
         int pageCount = meta.getPages();
 
-        List<Character> characters = charSerde.deserializeCharacterList(json);
-        charData.addAll(characters);
-        characters.clear();
+        List<T> entities = serde.deserializeJsonList(json);
+        oList.addAll(entities);
+        entities.clear();
 
         for (int i = 2; i <= pageCount; i++) {
             response = TCPClient.get(baseURL, port, path + "/?page=" + i);
@@ -186,9 +191,9 @@ public class RickAndMortyUI extends BorderPane
                 continue;
             }
 
-            characters = charSerde.deserializeCharacterList(json);
-            charData.addAll(characters);
-            characters.clear();
+            entities = serde.deserializeJsonList(json);
+            oList.addAll(entities);
+            entities.clear();
         }
     }
 }

@@ -1,5 +1,7 @@
 package at.fhtw.rickandmorty.network;
 
+import at.fhtw.rickandmorty.logging.Logger;
+
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import java.io.BufferedReader;
@@ -33,6 +35,7 @@ public class TCPClient {
                 return response.toString();
             }
         } catch (Exception e) {
+            Logger.log("ERROR", "HTTPS request failed: " + e.getMessage());
             throw new RuntimeException("HTTPS request failed", e);
         }
     }

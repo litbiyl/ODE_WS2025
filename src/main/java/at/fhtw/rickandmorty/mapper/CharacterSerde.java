@@ -1,7 +1,7 @@
 package at.fhtw.rickandmorty.mapper;
 
+import at.fhtw.rickandmorty.logging.Logger;
 import at.fhtw.rickandmorty.series.Character;
-import at.fhtw.rickandmorty.series.World;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +18,7 @@ public class CharacterSerde implements Serde<Character> {
         try {
             return mapper.readValue(json, Character.class);
         } catch(JsonProcessingException e) {
-            e.printStackTrace();
+            Logger.log("ERROR", "Failed to deserialize character: " + e.getMessage());
             throw new UnsupportedOperationException("Failed to deserialize character");
         }
     }
@@ -29,9 +29,10 @@ public class CharacterSerde implements Serde<Character> {
             JsonNode results = mapper.readTree(json).get("results");
             return mapper.readerForListOf(Character.class).readValue(results);
         } catch(JsonProcessingException e) {
-            e.printStackTrace();
+            Logger.log("ERROR", "Failed to deserialize character list: " + e.getMessage());
             throw new UnsupportedOperationException("Failed to deserialize character list");
         } catch (IOException e) {
+            Logger.log("ERROR", "Failed to read character list: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

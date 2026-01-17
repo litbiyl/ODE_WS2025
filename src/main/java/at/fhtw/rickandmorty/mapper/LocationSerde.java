@@ -1,7 +1,7 @@
 package at.fhtw.rickandmorty.mapper;
 
+import at.fhtw.rickandmorty.logging.Logger;
 import at.fhtw.rickandmorty.series.Location;
-import at.fhtw.rickandmorty.series.World;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +17,10 @@ public class LocationSerde implements Serde<Location> {
         try {
             return mapper.readValue(json, Location.class);
         } catch(JsonProcessingException e) {
-            e.printStackTrace();
+            Logger.log("ERROR", "Failed to deserialize location: " + e.getMessage());
             throw new UnsupportedOperationException("Failed to deserialize location");
         } catch (IOException e) {
+            Logger.log("ERROR", "Failed to read location: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -29,9 +30,10 @@ public class LocationSerde implements Serde<Location> {
             JsonNode results = mapper.readTree(json).get("results");
             return mapper.readerForListOf(Location.class).readValue(results);
         } catch(JsonProcessingException e) {
-            e.printStackTrace();
+            Logger.log("ERROR", "Failed to deserialize location list: " + e.getMessage());
             throw new UnsupportedOperationException("Failed to deserialize location list");
         } catch (IOException e) {
+            Logger.log("ERROR", "Failed to read location list: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

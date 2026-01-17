@@ -23,11 +23,17 @@ import static at.fhtw.rickandmorty.network.HTTPResponse.extractJson;
 
 public class RickAndMortyUI extends BorderPane
 {
-    Serde<Character> charSerde = new CharacterSerde();
-    Serde<Episode> epSerde = new EpisodeSerde();
-    Serde<Location> locSerde = new LocationSerde();
+    private static final int API_PORT = 443;
+    private static final String API_HOST = "rickandmortyapi.com";
+    private static final String CHARACTER_PATH = "/api/character";
+    private static final String EPISODE_PATH = "/api/episode";
+    private static final String LOCATION_PATH = "/api/location";
 
-    PageDataSerde pageSerde = new PageDataSerde();
+    private final Serde<Character> charSerde = new CharacterSerde();
+    private final Serde<Episode> epSerde = new EpisodeSerde();
+    private final Serde<Location> locSerde = new LocationSerde();
+
+    private final PageDataSerde pageSerde = new PageDataSerde();
     private boolean isDarkMode = false;
     private final TableView<Character> charTable = new TableView<>();
     private final ObservableList<Character> charData = FXCollections.observableArrayList();
@@ -167,6 +173,9 @@ public class RickAndMortyUI extends BorderPane
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) ->
         {
+            // log which tab the user switched to
+            Logger.log("INFO", "Tab changed to: " + newTab.getText());
+
             if (newTab == charTab)
             {
                 statusFilter.setVisible(true);
@@ -201,12 +210,14 @@ public class RickAndMortyUI extends BorderPane
                     this.getStylesheets().add(darkPath);
                     btnThemeToggle.setText("Toggle Light Mode");
                     isDarkMode = true;
+                    Logger.log("INFO", "Theme changed to: Dark Mode");
                 } else
                 {
                     String lightPath = getClass().getResource("/themes/light.css").toExternalForm();
                     this.getStylesheets().add(lightPath);
                     btnThemeToggle.setText("Toggle Dark Mode");
                     isDarkMode = false;
+                    Logger.log("INFO", "Theme changed to: Light Mode");
                 }
             }
 
@@ -214,6 +225,7 @@ public class RickAndMortyUI extends BorderPane
 
         statusFilter.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) ->
         {
+            Logger.log("INFO", "Filter changed to: " + newVal);
             charFiltered.setPredicate(character ->
             {
                 if (newVal == null || newVal.equals("All")) return true;
@@ -227,6 +239,7 @@ public class RickAndMortyUI extends BorderPane
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Character character = row.getItem();
+                    Logger.log("INFO", "Character details opened: " + character.getName());
                     CharacterUI characterUI = new CharacterUI();
                     characterUI.openCharacterWindow(character, epData, this.getStylesheets());
                 }
@@ -241,6 +254,7 @@ public class RickAndMortyUI extends BorderPane
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Episode episode = row.getItem();
+                    Logger.log("INFO", "Episode details opened: " + episode.getName());
                     EpisodeUI episodeUI = new EpisodeUI();
                     episodeUI.openEpisodeWindow(episode, charData, this.getStylesheets());
                 }
@@ -255,6 +269,7 @@ public class RickAndMortyUI extends BorderPane
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     Location location = row.getItem();
+                    Logger.log("INFO", "Location details opened: " + location.getName());
                     LocationUI locationUI = new LocationUI();
                     locationUI.openLocationWindow(location, charData, this.getStylesheets());
                 }
@@ -266,20 +281,14 @@ public class RickAndMortyUI extends BorderPane
 
 
     private void loadInitialData() {
-        int port = 443;
-        String baseURL = "rickandmortyapi.com";
-        String charPath = "/api/character";
-        String epPath   = "/api/episode";
-        String locPath  = "/api/location";
-
         Thread charThread = new Thread(() ->
         {
             try
             {
-                fetchPage(baseURL, port, charPath, charData, charSerde);
+                fetchPage(API_HOST, API_PORT, CHARACTER_PATH, charData, charSerde);
             } catch (Exception e)
             {
-                e.printStackTrace();
+                Logger.log("ERROR", "Failed to fetch characters: " + e.getMessage());
             }
         });
 
@@ -287,10 +296,10 @@ public class RickAndMortyUI extends BorderPane
         {
             try
             {
-                fetchPage(baseURL, port, epPath, epData, epSerde);
+                fetchPage(API_HOST, API_PORT, EPISODE_PATH, epData, epSerde);
             } catch (Exception e)
             {
-                e.printStackTrace();
+                Logger.log("ERROR", "Failed to fetch episodes: " + e.getMessage());
             }
         });
 
@@ -298,10 +307,10 @@ public class RickAndMortyUI extends BorderPane
         {
             try
             {
-                fetchPage(baseURL, port, locPath, locData, locSerde);
+                fetchPage(API_HOST, API_PORT, LOCATION_PATH, locData, locSerde);
             } catch (Exception e)
             {
-                e.printStackTrace();
+                Logger.log("ERROR", "Failed to fetch locations: " + e.getMessage());
             }
         });
 

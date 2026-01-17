@@ -1,7 +1,7 @@
 package at.fhtw.rickandmorty.mapper;
 
+import at.fhtw.rickandmorty.logging.Logger;
 import at.fhtw.rickandmorty.series.Episode;
-import at.fhtw.rickandmorty.series.World;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -18,7 +18,7 @@ public class EpisodeSerde implements Serde<Episode> {
         try {
             return mapper.readValue(json, Episode.class);
         } catch(JsonProcessingException e) {
-            e.printStackTrace();
+            Logger.log("ERROR", "Failed to deserialize episode: " + e.getMessage());
             throw new UnsupportedOperationException("Failed to deserialize episode");
             }
     }
@@ -29,9 +29,10 @@ public class EpisodeSerde implements Serde<Episode> {
             JsonNode results = mapper.readTree(json).get("results");
             return mapper.readerForListOf(Episode.class).readValue(results);
         } catch(JsonProcessingException e) {
-            e.printStackTrace();
+            Logger.log("ERROR", "Failed to deserialize episode list: " + e.getMessage());
             throw new UnsupportedOperationException("Failed to deserialize episode list");
         } catch (IOException e) {
+            Logger.log("ERROR", "Failed to read episode list: " + e.getMessage());
             throw new RuntimeException(e);
         }
     }

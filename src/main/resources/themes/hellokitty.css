@@ -1,19 +1,29 @@
-.root {
+.root
+{
     -fx-base: #ffb6c1;
     -fx-control-inner-background: #ffffff;
     -fx-text-base-color: #ff1493;
+    -fx-font-family: "Comic Sans MS";
 }
 
-.table-view {
+.table-view
+{
     -fx-selection-bar: #ff69b4;
 }
 
-.button {
+.button
+{
     -fx-background-color: #ff69b4;
     -fx-text-fill: white;
     -fx-border-color: #ff1493;
 }
 
-.tab-pane .tab-header-area .tab-header-background {
+.tab-pane .tab-header-area .tab-header-background
+{
     -fx-background-color: #ffb6c1;
+}
+
+.label
+{
+    -fx-text-fill: #ff69b4;
 }

@@ -1,5 +1,6 @@
 package at.fhtw.rickandmorty.ui;
 
+import at.fhtw.rickandmorty.logging.Logger;
 import at.fhtw.rickandmorty.mapper.*;
 import at.fhtw.rickandmorty.network.PageData;
 import at.fhtw.rickandmorty.network.TCPClient;
@@ -146,7 +147,8 @@ public class RickAndMortyUI extends BorderPane
         tabPane.getTabs().add(locTab);
 
         setCenter(tabPane);
-
+        btnThemeToggle.setOnAction(e -> {
+            Logger.log("INFO", "User changed theme");});
         // Logic of Dark/Light Mode Button
     }
 

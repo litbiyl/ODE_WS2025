@@ -1,5 +1,6 @@
 package at.fhtw.rickandmorty.logging;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -13,10 +14,10 @@ public class Logger {
     public static synchronized void log(String level, String message) {
 
         File file = new File(LOG_FILE);
-        try (FileWriter writer = new FileWriter(file)) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             String timestamp = LocalDateTime.now().format(formatter);
             String logEntry = String.format("%s [%s] %s", timestamp, level, message);
-            writer.write(logEntry);
+            writer.write(logEntry +  "\r\n");
         } catch (Exception e) {
             System.err.println("Failed to write to log file: " + e.getMessage());
         }

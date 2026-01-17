@@ -16,5 +16,10 @@ public class Main extends javafx.application.Application
         rickAndMortyStage.setTitle("Rick & Morty");
         rickAndMortyStage.show();
         Logger.log("INFO", "Rick & Morty started.");
+
+        rickAndMortyStage.setOnCloseRequest(event -> {
+            Logger.log("INFO", "Rick & Morty closed by user.");
+        });
     }
+
 }

@@ -20,7 +20,7 @@
 
 1.  **Clone the Repository**
     ```bash
-    git clone [https://github.com/litbiyl/ODE_WS2025)
+    git clone [(https://github.com/litbiyl/ODE_WS2025.git)]
     ```
 
 2.  **Compile the Project**

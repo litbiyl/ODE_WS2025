@@ -11,20 +11,19 @@ import java.util.List;
 
 public class LocationSerde implements Serde<Location> {
 
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
+    @Override
     public Location deserializeJson(String json) {
         try {
             return mapper.readValue(json, Location.class);
         } catch(JsonProcessingException e) {
             Logger.log("ERROR", "Failed to deserialize location: " + e.getMessage());
             throw new UnsupportedOperationException("Failed to deserialize location");
-        } catch (IOException e) {
-            Logger.log("ERROR", "Failed to read location: " + e.getMessage());
-            throw new RuntimeException(e);
         }
     }
 
+    @Override
     public List<Location> deserializeJsonList(String json) {
         try {
             JsonNode results = mapper.readTree(json).get("results");

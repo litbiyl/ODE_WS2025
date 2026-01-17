@@ -11,7 +11,7 @@ import java.util.List;
 
 public class EpisodeSerde implements Serde<Episode> {
 
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public Episode deserializeJson(String json) {

@@ -11,7 +11,7 @@ import java.util.List;
 
 public class CharacterSerde implements Serde<Character> {
 
-    ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
     public Character deserializeJson(String json) {

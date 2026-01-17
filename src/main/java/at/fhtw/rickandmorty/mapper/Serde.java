@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface Serde<T extends World>{
 
-    public World deserializeJson(String json);
+    public T deserializeJson(String json);
 
     public List<T> deserializeJsonList(String json);
 }

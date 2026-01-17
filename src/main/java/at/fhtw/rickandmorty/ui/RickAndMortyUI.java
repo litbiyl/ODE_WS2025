@@ -93,9 +93,6 @@ public class RickAndMortyUI extends BorderPane
         charSpeciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
         charSpeciesCol.setPrefWidth(45);
 
-        TableColumn<Character, String> charTypeCol = new TableColumn<>("Type");
-        charTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-
         TableColumn<Character, String> charGenderCol = new TableColumn<>("Gender");
         charGenderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
         charGenderCol.setPrefWidth(35);

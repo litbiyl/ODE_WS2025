@@ -1,12 +1,11 @@
-/* Hello Kitty Design */
 .root {
-    -fx-base: #ffb6c1; /* Light Pink */
-    -fx-control-inner-background: #ffffff; /* White for tables */
-    -fx-text-base-color: #ff1493; /* Deep Pink text */
+    -fx-base: #ffb6c1;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-base-color: #ff1493;
 }
 
 .table-view {
-    -fx-selection-bar: #ff69b4; /* Hot Pink selection */
+    -fx-selection-bar: #ff69b4;
 }
 
 .button {

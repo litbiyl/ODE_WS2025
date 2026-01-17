@@ -11,6 +11,8 @@ import at.fhtw.rickandmorty.series.World;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.BorderPane;
@@ -32,12 +34,16 @@ public class RickAndMortyUI extends BorderPane
     private boolean isDarkMode = false;
     private final TableView<Character> charTable = new TableView<>();
     private final ObservableList<Character> charData = FXCollections.observableArrayList();
+    private final FilteredList<Character> charFiltered = new FilteredList<>(charData, p -> true);
+    private final SortedList<Character> charSorted = new SortedList<>(charFiltered);
 
     private final TableView<Episode> epTable = new TableView<>();
     private final ObservableList<Episode> epData = FXCollections.observableArrayList();
+    private final SortedList<Episode> epSorted = new SortedList<>(epData);
 
     private final TableView<Location> locTable = new TableView<>();
     private final ObservableList<Location> locData = FXCollections.observableArrayList();
+    private final SortedList<Location> locSorted = new SortedList<>(locData);
 
     public RickAndMortyUI()
     {
@@ -49,8 +55,14 @@ public class RickAndMortyUI extends BorderPane
     {
         Button btnThemeToggle = new Button("Toggle Dark Mode");
 
-        ToolBar topToolBar = new ToolBar(new Pane(), btnThemeToggle);
-        HBox.setHgrow(topToolBar.getItems().getFirst(), Priority.ALWAYS);
+        ChoiceBox<String> statusFilter = new ChoiceBox<>();
+        statusFilter.getItems().addAll("All", "Alive", "Dead", "unknown");
+        statusFilter.setValue("All");
+        Label statusLabel = new Label("Status");
+
+        Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        ToolBar topToolBar = new ToolBar( statusLabel, statusFilter, spacer, btnThemeToggle);
         setTop(topToolBar);
 
         // possible error message box
@@ -97,7 +109,8 @@ public class RickAndMortyUI extends BorderPane
         });
 
         charTable.getColumns().addAll(charIdCol, charNameCol, charStatusCol, charSpeciesCol, charGenderCol, charOriginCol, charLocationCol);
-        charTable.setItems(charData);
+        charSorted.comparatorProperty().bind(charTable.comparatorProperty());
+        charTable.setItems(charSorted);
         charTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         charTab.setContent(charTable);
@@ -120,7 +133,8 @@ public class RickAndMortyUI extends BorderPane
         epAirDateCol.setCellValueFactory(new PropertyValueFactory<>("air_date"));
 
         epTable.getColumns().addAll(epIdCol, epEpisodeCol, epNameCol, epAirDateCol);
-        epTable.setItems(epData);
+        epSorted.comparatorProperty().bind(epTable.comparatorProperty());
+        epTable.setItems(epSorted);
         epTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         epTab.setContent(epTable);
@@ -142,7 +156,8 @@ public class RickAndMortyUI extends BorderPane
         locDimensionCol.setCellValueFactory(new PropertyValueFactory<>("Dimension"));
 
         locTable.getColumns().addAll(locIdCol, locNameCol, locTypeCol, locDimensionCol);
-        locTable.setItems(locData);
+        locSorted.comparatorProperty().bind(locTable.comparatorProperty());
+        locTable.setItems(locSorted);
         locTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
         locTab.setContent(locTable);
@@ -153,6 +168,19 @@ public class RickAndMortyUI extends BorderPane
 
         setCenter(tabPane);
 
+        tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) ->
+        {
+            if (newTab == charTab)
+            {
+                statusFilter.setVisible(true);
+                statusLabel.setVisible(true);
+            } else
+            {
+                statusFilter.setVisible(false);
+                statusLabel.setVisible(false);
+
+            }
+        });
         btnThemeToggle.setOnMouseClicked(event ->
         {
             if (event.getClickCount() == 2)
@@ -184,8 +212,20 @@ public class RickAndMortyUI extends BorderPane
                     isDarkMode = false;
                 }
             }
+
         });
+
+        statusFilter.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) ->
+        {
+            charFiltered.setPredicate(character ->
+            {
+                if (newVal == null || newVal.equals("All")) return true;
+                return character.getStatus().equalsIgnoreCase(newVal);
+            });
+        });
+
     }
+
 
     private void loadInitialData() {
         int port = 443;

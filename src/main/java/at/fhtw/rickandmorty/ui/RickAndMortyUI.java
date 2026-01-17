@@ -1,5 +1,11 @@
 package at.fhtw.rickandmorty.ui;
 
+import at.fhtw.rickandmorty.mapper.CharacterSerde;
+import at.fhtw.rickandmorty.mapper.PageDataSerde;
+import at.fhtw.rickandmorty.network.PageData;
+import at.fhtw.rickandmorty.network.TCPClient;
+import at.fhtw.rickandmorty.series.Character;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -9,11 +15,17 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 
+import java.util.List;
+
+import static at.fhtw.rickandmorty.network.HTTPResponse.extractJson;
+
 public class RickAndMortyUI extends BorderPane
 {
+    CharacterSerde charSerde = new CharacterSerde();
+    PageDataSerde pageSerde = new PageDataSerde();
 
-    private final TableView<String> charTable = new TableView<>();
-    private final ObservableList<String> charData = FXCollections.observableArrayList();
+    private final TableView<Character> charTable = new TableView<>();
+    private final ObservableList<Character> charData = FXCollections.observableArrayList();
 
     private final TableView<String> epTable = new TableView<>();
     private final ObservableList<String> epData = FXCollections.observableArrayList();
@@ -24,6 +36,7 @@ public class RickAndMortyUI extends BorderPane
     public RickAndMortyUI()
     {
         initializeUI();
+        loadInitialData();
     }
 
     private void initializeUI()
@@ -44,35 +57,37 @@ public class RickAndMortyUI extends BorderPane
         Tab charTab = new Tab("Characters");
         charTab.setClosable(false);
 
-        TableColumn<String, Integer> charIdCol = new TableColumn<>("ID");
+        TableColumn<Character, Integer> charIdCol = new TableColumn<>("ID");
         charIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
 
-        TableColumn<String, String> charNameCol = new TableColumn<>("Name");
+        TableColumn<Character, String> charNameCol = new TableColumn<>("Name");
         charNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<String, String> charStatusCol = new TableColumn<>("Status");
+        TableColumn<Character, String> charStatusCol = new TableColumn<>("Status");
         charStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
 
-        TableColumn<String, String> charSpeciesCol = new TableColumn<>("Species");
+        TableColumn<Character, String> charSpeciesCol = new TableColumn<>("Species");
         charSpeciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
 
-        TableColumn<String, String> charTypeCol = new TableColumn<>("Type");
+        TableColumn<Character, String> charTypeCol = new TableColumn<>("Type");
         charTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 
-        TableColumn<String, String> charGenderCol = new TableColumn<>("Gender");
+        TableColumn<Character, String> charGenderCol = new TableColumn<>("Gender");
         charGenderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
 
-        TableColumn<String, String> charOriginCol = new TableColumn<>("Origin");
-        charOriginCol.setCellValueFactory( new PropertyValueFactory<>("origin"));
+        TableColumn<Character, String> charOriginCol = new TableColumn<>("Origin");
+        charOriginCol.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().getOrigin().getName());
+        });
 
-        TableColumn<String, String> charLocationCol = new TableColumn<>("Location");
-        charLocationCol.setCellValueFactory( new PropertyValueFactory<>("location"));
+        TableColumn<Character, String> charLocationCol = new TableColumn<>("Location");
+        charLocationCol.setCellValueFactory(cellData -> {
+            return new SimpleStringProperty(cellData.getValue().getLocation().getName());
+        });
 
-        TableColumn<String, String> charEpisodeCol = new TableColumn<>("Episodes");
-        charEpisodeCol.setCellValueFactory(new PropertyValueFactory<>("episode"));
-
-        charTable.getColumns().addAll(charIdCol, charNameCol, charStatusCol, charSpeciesCol, charGenderCol, charOriginCol, charLocationCol, charEpisodeCol);
+        charTable.getColumns().addAll(charIdCol, charNameCol, charStatusCol, charSpeciesCol, charGenderCol, charOriginCol, charLocationCol);
         charTable.setItems(charData);
+        charTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         charTab.setContent(charTable);
 
@@ -93,6 +108,7 @@ public class RickAndMortyUI extends BorderPane
 
         epTable.getColumns().addAll(epIdCol, epEpisodeCol, epNameCol, epAirDateCol);
         epTable.setItems(epData);
+        epTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         epTab.setContent(epTable);
 
@@ -116,6 +132,7 @@ public class RickAndMortyUI extends BorderPane
 
         locTable.getColumns().addAll(locIdCol, locNameCol, locTypeCol, locDimensionCol, locResidentsCol);
         locTable.setItems(locData);
+        locTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
 
         locTab.setContent(locTable);
 
@@ -126,5 +143,52 @@ public class RickAndMortyUI extends BorderPane
         setCenter(tabPane);
 
         // Logic of Dark/Light Mode Button
+    }
+
+    private void loadInitialData() {
+        int port = 443;
+        String baseURL = "rickandmortyapi.com";
+        String characterPath = "/api/character";
+        String episodePath   = "/api/episode";
+        String locationPath  = "/api/location";
+
+        Thread charThread = new Thread(() -> {
+            try {
+                fetchPage(baseURL, port, characterPath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+
+        charThread.setDaemon(true);
+        charThread.start();
+    }
+
+    private void fetchPage(String baseURL, int port, String path) {
+
+        String response = TCPClient.get(baseURL, port, path);
+        String json = extractJson(response);
+        if (json == null){
+            return;
+        }
+
+        PageData meta = pageSerde.deserializePageData(json);
+        int pageCount = meta.getPages();
+
+        List<Character> characters = charSerde.deserializeCharacterList(json);
+        charData.addAll(characters);
+        characters.clear();
+
+        for (int i = 2; i <= pageCount; i++) {
+            response = TCPClient.get(baseURL, port, path + "/?page=" + i);
+            json = extractJson(response);
+            if (json == null) {
+                continue;
+            }
+
+            characters = charSerde.deserializeCharacterList(json);
+            charData.addAll(characters);
+            characters.clear();
+        }
     }
 }

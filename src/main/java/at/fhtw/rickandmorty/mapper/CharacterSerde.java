@@ -1,6 +1,6 @@
-package at.fhtw.rickandmorty.mapping;
+package at.fhtw.rickandmorty.mapper;
 
-import at.fhtw.rickandmorty.series.Episode;
+import at.fhtw.rickandmorty.series.Character;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -8,26 +8,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.util.List;
 
-public class EpisodeSerde {
+public class CharacterSerde {
 
     ObjectMapper mapper = new ObjectMapper();
 
-    public Episode deserializeEpisode(String json) {
+    public Character deserializeCharacter(String json) {
         try {
-            return mapper.readValue(json, Episode.class);
+            return mapper.readValue(json, Character.class);
         } catch(JsonProcessingException e) {
             e.printStackTrace();
-            throw new UnsupportedOperationException("Failed to deserialize episode");
-            }
+            throw new UnsupportedOperationException("Failed to deserialize character");
+        }
     }
 
-    public List<Episode> deserializeEpisodeList(String json) {
+    public List<Character> deserializeCharacterList(String json) {
         try {
             JsonNode results = mapper.readTree(json).get("results");
-            return mapper.readerForListOf(Episode.class).readValue(results);
+            return mapper.readerForListOf(Character.class).readValue(results);
         } catch(JsonProcessingException e) {
             e.printStackTrace();
-            throw new UnsupportedOperationException("Failed to deserialize episode list");
+            throw new UnsupportedOperationException("Failed to deserialize character list");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

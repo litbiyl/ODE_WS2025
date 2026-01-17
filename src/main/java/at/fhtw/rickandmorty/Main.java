@@ -1,5 +1,6 @@
 package at.fhtw.rickandmorty;
 
+import at.fhtw.rickandmorty.logging.Logger;
 import at.fhtw.rickandmorty.ui.RickAndMortyUI;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -14,5 +15,6 @@ public class Main extends javafx.application.Application
         rickAndMortyStage.setScene(rickAndMortyScene);
         rickAndMortyStage.setTitle("Rick & Morty");
         rickAndMortyStage.show();
+        Logger.log("INFO", "Rick & Morty started.");
     }
 }

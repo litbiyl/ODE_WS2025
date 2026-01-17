@@ -29,15 +29,15 @@ public class RickAndMortyUI extends BorderPane
     Serde<Location> locSerde = new LocationSerde();
 
     PageDataSerde pageSerde = new PageDataSerde();
-
+    private boolean isDarkMode = false;
     private final TableView<Character> charTable = new TableView<>();
     private final ObservableList<Character> charData = FXCollections.observableArrayList();
 
-    private final TableView<String> epTable = new TableView<>();
-    private final ObservableList<String> epData = FXCollections.observableArrayList();
+    private final TableView<Episode> epTable = new TableView<>();
+    private final ObservableList<Episode> epData = FXCollections.observableArrayList();
 
-    private final TableView<String> locTable = new TableView<>();
-    private final ObservableList<String> locData = FXCollections.observableArrayList();
+    private final TableView<Location> locTable = new TableView<>();
+    private final ObservableList<Location> locData = FXCollections.observableArrayList();
 
     public RickAndMortyUI()
     {
@@ -65,26 +65,31 @@ public class RickAndMortyUI extends BorderPane
 
         TableColumn<Character, Integer> charIdCol = new TableColumn<>("ID");
         charIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        charIdCol.setMaxWidth(50);
 
         TableColumn<Character, String> charNameCol = new TableColumn<>("Name");
         charNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
         TableColumn<Character, String> charStatusCol = new TableColumn<>("Status");
         charStatusCol.setCellValueFactory(new PropertyValueFactory<>("status"));
+        charStatusCol.setPrefWidth(30);
 
         TableColumn<Character, String> charSpeciesCol = new TableColumn<>("Species");
         charSpeciesCol.setCellValueFactory(new PropertyValueFactory<>("species"));
+        charSpeciesCol.setPrefWidth(45);
 
         TableColumn<Character, String> charTypeCol = new TableColumn<>("Type");
         charTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 
         TableColumn<Character, String> charGenderCol = new TableColumn<>("Gender");
         charGenderCol.setCellValueFactory(new PropertyValueFactory<>("gender"));
+        charGenderCol.setPrefWidth(35);
 
         TableColumn<Character, String> charOriginCol = new TableColumn<>("Origin");
         charOriginCol.setCellValueFactory(cellData -> {
             return new SimpleStringProperty(cellData.getValue().getOrigin().getName());
         });
+        charOriginCol.setPrefWidth(60);
 
         TableColumn<Character, String> charLocationCol = new TableColumn<>("Location");
         charLocationCol.setCellValueFactory(cellData -> {
@@ -100,16 +105,18 @@ public class RickAndMortyUI extends BorderPane
         Tab epTab = new Tab("Episodes");
         epTab.setClosable(false);
 
-        TableColumn<String, Integer> epIdCol = new TableColumn<>("ID");
+        TableColumn<Episode, Integer> epIdCol = new TableColumn<>("ID");
         epIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        epIdCol.setMaxWidth(60);
 
-        TableColumn<String, String> epNameCol = new TableColumn<>("Name");
+        TableColumn<Episode, String> epNameCol = new TableColumn<>("Name");
         epNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-        TableColumn<String, String> epEpisodeCol = new TableColumn<>("Episode");
+        epNameCol.setMaxWidth(350);
+        TableColumn<Episode, String> epEpisodeCol = new TableColumn<>("Episode");
         epEpisodeCol.setCellValueFactory(new PropertyValueFactory<>("Episode"));
+        epEpisodeCol.setMaxWidth(120);
 
-        TableColumn<String, String> epAirDateCol = new TableColumn<>("Air Date");
+        TableColumn<Episode, String> epAirDateCol = new TableColumn<>("Air Date");
         epAirDateCol.setCellValueFactory(new PropertyValueFactory<>("air_date"));
 
         epTable.getColumns().addAll(epIdCol, epEpisodeCol, epNameCol, epAirDateCol);
@@ -121,22 +128,20 @@ public class RickAndMortyUI extends BorderPane
         Tab locTab = new Tab("Locations");
         locTab.setClosable(false);
 
-        TableColumn<String, Integer> locIdCol = new TableColumn<>("ID");
+        TableColumn<Location, Integer> locIdCol = new TableColumn<>("ID");
         locIdCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        locIdCol.setMaxWidth(50);
 
-        TableColumn<String, String> locNameCol = new TableColumn<>("Name");
+        TableColumn<Location, String> locNameCol = new TableColumn<>("Name");
         locNameCol.setCellValueFactory(new PropertyValueFactory<>("name"));
 
-        TableColumn<String, String> locTypeCol = new TableColumn<>("Type");
+        TableColumn<Location, String> locTypeCol = new TableColumn<>("Type");
         locTypeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
 
-        TableColumn<String, String> locDimensionCol = new TableColumn<>("Dimension");
+        TableColumn<Location, String> locDimensionCol = new TableColumn<>("Dimension");
         locDimensionCol.setCellValueFactory(new PropertyValueFactory<>("Dimension"));
 
-        TableColumn<String, String> locResidentsCol = new TableColumn<>("Residents");
-        locResidentsCol.setCellValueFactory(new PropertyValueFactory<>("residents"));
-
-        locTable.getColumns().addAll(locIdCol, locNameCol, locTypeCol, locDimensionCol, locResidentsCol);
+        locTable.getColumns().addAll(locIdCol, locNameCol, locTypeCol, locDimensionCol);
         locTable.setItems(locData);
         locTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
@@ -147,9 +152,39 @@ public class RickAndMortyUI extends BorderPane
         tabPane.getTabs().add(locTab);
 
         setCenter(tabPane);
-        btnThemeToggle.setOnAction(e -> {
-            Logger.log("INFO", "User changed theme");});
-        // Logic of Dark/Light Mode Button
+
+        btnThemeToggle.setOnMouseClicked(event ->
+        {
+            if (event.getClickCount() == 2)
+            {
+                Logger.log("INFO", "Easter Egg: Hello Kitty Mode Activated!");
+
+                this.getStylesheets().clear();
+                String kittyPath = getClass().getResource("/themes/hellokitty.css").toExternalForm();
+                this.getStylesheets().add(kittyPath);
+
+                btnThemeToggle.setText("Hello Kitty Mode!");
+                return;
+            }
+
+            if (event.getClickCount() == 1)
+            {
+                this.getStylesheets().clear();
+                if (!isDarkMode)
+                {
+                    String darkPath = getClass().getResource("/themes/dark.css").toExternalForm();
+                    this.getStylesheets().add(darkPath);
+                    btnThemeToggle.setText("Toggle Light Mode");
+                    isDarkMode = true;
+                } else
+                {
+                    String lightPath = getClass().getResource("/themes/light.css").toExternalForm();
+                    this.getStylesheets().add(lightPath);
+                    btnThemeToggle.setText("Toggle Dark Mode");
+                    isDarkMode = false;
+                }
+            }
+        });
     }
 
     private void loadInitialData() {
@@ -159,16 +194,47 @@ public class RickAndMortyUI extends BorderPane
         String epPath   = "/api/episode";
         String locPath  = "/api/location";
 
-        Thread charThread = new Thread(() -> {
-            try {
+        Thread charThread = new Thread(() ->
+        {
+            try
+            {
                 fetchPage(baseURL, port, charPath, charData, charSerde);
-            } catch (Exception e) {
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        });
+
+        Thread epThread = new Thread(() ->
+        {
+            try
+            {
+                fetchPage(baseURL, port, epPath, epData, epSerde);
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        });
+
+        Thread locThread = new Thread(() ->
+        {
+            try
+            {
+                fetchPage(baseURL, port, locPath, locData, locSerde);
+            } catch (Exception e)
+            {
                 e.printStackTrace();
             }
         });
 
         charThread.setDaemon(true);
         charThread.start();
+
+        epThread.setDaemon(true);
+        epThread.start();
+
+        locThread.setDaemon(true);
+        locThread.start();
     }
 
     private <T extends World> void fetchPage(String baseURL, int port, String path, ObservableList<T> oList, Serde<T> serde) {

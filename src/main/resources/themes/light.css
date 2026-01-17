@@ -1,0 +1,10 @@
+.root {
+    -fx-base: #f6f6f6;
+    -fx-background: #ffffff;
+    -fx-control-inner-background: #ffffff;
+    -fx-text-fill: #111111;
+}
+
+.label { -fx-text-fill: #111111; }
+
+.table-view { -fx-background-color: -fx-background; }

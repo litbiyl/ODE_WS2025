@@ -34,9 +34,14 @@ public class EpisodeUI {
 
         List<Integer> charIds = new ArrayList<>();
 
-        for (String charUrl : ep.getCharacters()) {
-            String charId = charUrl.substring(charUrl.lastIndexOf("/") + 1);
-            charIds.add(Integer.parseInt(charId));
+        if (ep.getCharacters() != null) {
+            for (String charUrl : ep.getCharacters()) {
+                try {
+                    String charId = charUrl.substring(charUrl.lastIndexOf("/") + 1);
+                    charIds.add(Integer.parseInt(charId));
+                } catch (NumberFormatException | StringIndexOutOfBoundsException ignored) {
+                }
+            }
         }
 
         for (int id : charIds) {

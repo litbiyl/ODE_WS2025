@@ -35,8 +35,10 @@ public class CharacterUI {
         Label lblStatus = new Label("Status: " + c.getStatus());
         Label lblSpecies = new Label("Species: " + c.getSpecies());
         Label lblGender = new Label("Gender: " + c.getGender());
-        Label lblOrigin = new Label("Origin: " + c.getOrigin().getName());
-        Label lblLocation = new Label("Location: " + c.getLocation().getName());
+        String originName = (c.getOrigin() != null) ? c.getOrigin().getName() : "Unknown";
+        Label lblOrigin = new Label("Origin: " + originName);
+        String locationName = (c.getLocation() != null) ? c.getLocation().getName() : "Unknown";
+        Label lblLocation = new Label("Location: " + locationName);
         Label lblEpisodes = new Label("Episodes:");
 
         Label lblType = null;
@@ -49,9 +51,14 @@ public class CharacterUI {
 
         List<Integer> epIds = new ArrayList<>();
 
-        for (String epUrl : c.getEpisode()) {
-            String epId = epUrl.substring(epUrl.lastIndexOf("/") + 1);
-            epIds.add(Integer.parseInt(epId));
+        if (c.getEpisode() != null) {
+            for (String epUrl : c.getEpisode()) {
+                try {
+                    String epId = epUrl.substring(epUrl.lastIndexOf("/") + 1);
+                    epIds.add(Integer.parseInt(epId));
+                } catch (NumberFormatException | StringIndexOutOfBoundsException ignored) {
+                }
+            }
         }
 
         for (int id : epIds) {

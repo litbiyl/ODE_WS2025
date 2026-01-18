@@ -34,9 +34,14 @@ public class LocationUI {
 
         List<Integer> charIds = new ArrayList<>();
 
-        for (String charUrl : l.getResidents()) {
-            String charId = charUrl.substring(charUrl.lastIndexOf("/") + 1);
-            charIds.add(Integer.parseInt(charId));
+        if (l.getResidents() != null) {
+            for (String charUrl : l.getResidents()) {
+                try {
+                    String charId = charUrl.substring(charUrl.lastIndexOf("/") + 1);
+                    charIds.add(Integer.parseInt(charId));
+                } catch (NumberFormatException | StringIndexOutOfBoundsException ignored) {
+                }
+            }
         }
 
         for (int id : charIds) {

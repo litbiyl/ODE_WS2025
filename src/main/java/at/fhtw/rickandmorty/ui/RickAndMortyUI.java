@@ -23,7 +23,6 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 
-import java.awt.*;
 import java.util.List;
 
 import static at.fhtw.rickandmorty.network.ApiConstants.*;
@@ -111,13 +110,15 @@ public class RickAndMortyUI extends BorderPane
 
         TableColumn<Character, String> charOriginCol = new TableColumn<>("Origin");
         charOriginCol.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getOrigin().getName());
+            var origin = cellData.getValue().getOrigin();
+            return new SimpleStringProperty(origin != null ? origin.getName() : "Unknown");
         });
         charOriginCol.setPrefWidth(60);
 
         TableColumn<Character, String> charLocationCol = new TableColumn<>("Location");
         charLocationCol.setCellValueFactory(cellData -> {
-            return new SimpleStringProperty(cellData.getValue().getLocation().getName());
+            var location = cellData.getValue().getLocation();
+            return new SimpleStringProperty(location != null ? location.getName() : "Unknown");
         });
 
         charTable.getColumns().addAll(charIdCol, charNameCol, charStatusCol, charSpeciesCol, charGenderCol, charOriginCol, charLocationCol);

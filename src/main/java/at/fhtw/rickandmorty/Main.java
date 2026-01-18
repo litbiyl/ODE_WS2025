@@ -18,11 +18,17 @@ public class Main extends javafx.application.Application
         rickAndMortyStage.setScene(rickAndMortyScene);
         rickAndMortyStage.setTitle("Rick & Morty");
         rickAndMortyStage.show();
-        rickAndMortyStage.getIcons().add(
-                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/media/appicon.png")))
-        );
-        Logger.log("INFO", "Rick & Morty started.");
+        try
+        {
+            rickAndMortyStage.getIcons().add(
+                    new Image(Objects.requireNonNull(getClass().getResourceAsStream("/media/appicon.png")))
+            );
+        } catch (Exception e)
+        {
+            Logger.log("INFO", "Icon not available");
+        }
 
+        Logger.log("INFO", "Rick & Morty started.");
         rickAndMortyStage.setOnCloseRequest(event -> {
             Logger.log("INFO", "Rick & Morty closed by user.");
         });

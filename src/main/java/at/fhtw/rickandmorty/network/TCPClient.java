@@ -13,8 +13,38 @@ import java.net.SocketTimeoutException;
 
 public class TCPClient {
     private static final int READ_TIMEOUT = 10000;
+    private static final int MAX_RETRIES = 3;
+    private static final int RETRY_DELAY_MS = 1000;
 
     public static String get(String host, int port, String path) {
+        IOException lastException = null;
+
+        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+            try {
+                return executeRequest(host, port, path);
+            } catch (SocketTimeoutException e) {
+                lastException = e;
+                Logger.log("ERROR", "Request timed out (attempt " + attempt + "/" + MAX_RETRIES + "): " + path);
+            } catch (IOException e) {
+                lastException = e;
+                Logger.log("ERROR", "Request failed (attempt " + attempt + "/" + MAX_RETRIES + "): " + e.getMessage());
+            }
+
+            if (attempt < MAX_RETRIES) {
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+        }
+
+        Logger.log("ERROR", "HTTPS request failed after " + MAX_RETRIES + " attempts: " + path);
+        throw new RuntimeException("HTTPS request failed after " + MAX_RETRIES + " attempts", lastException);
+    }
+
+    private static String executeRequest(String host, int port, String path) throws IOException {
         SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
         try (SSLSocket socket = (SSLSocket) factory.createSocket(host, port)) {
@@ -37,12 +67,6 @@ public class TCPClient {
             }
 
             return response.toString();
-        } catch (SocketTimeoutException e) {
-            Logger.log("ERROR", "HTTPS request timed out: " + e.getMessage());
-            throw new RuntimeException("HTTPS request timed out", e);
-        } catch (IOException e) {
-            Logger.log("ERROR", "HTTPS request failed: " + e.getMessage());
-            throw new RuntimeException("HTTPS request failed", e);
         }
     }
 }

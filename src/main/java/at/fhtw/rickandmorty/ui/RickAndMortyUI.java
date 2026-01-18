@@ -48,7 +48,8 @@ public class RickAndMortyUI extends BorderPane
 
     private final TableView<Location> locTable = new TableView<>();
     private final ObservableList<Location> locData = FXCollections.observableArrayList();
-    private final SortedList<Location> locSorted = new SortedList<>(locData);
+    private final FilteredList<Location> locFiltered = new FilteredList<>(locData, p -> true);
+    private final SortedList<Location> locSorted = new SortedList<>(locFiltered);
 
     Label charStatusLabel = new Label("Characters loaded (0/?)");
     Label epStatusLabel = new Label("Episodes loaded (0/?)");
@@ -69,10 +70,16 @@ public class RickAndMortyUI extends BorderPane
         statusFilter.getItems().addAll("All", "Alive", "Dead", "unknown");
         statusFilter.setValue("All");
 
+        Label locationSearchLabel = new Label("Location Search");
+        TextField locationSearchField = new TextField();
+        locationSearchField.setPromptText("Search by name...");
+        locationSearchLabel.setVisible(false);
+        locationSearchField.setVisible(false);
+
         Pane topSpacer = new Pane();
         HBox.setHgrow(topSpacer, Priority.ALWAYS);
         Label statusLabel = new Label("Character Status");
-        ToolBar topToolBar = new ToolBar(statusLabel, statusFilter, topSpacer, btnThemeToggle);
+        ToolBar topToolBar = new ToolBar(statusLabel, statusFilter, locationSearchLabel, locationSearchField, topSpacer, btnThemeToggle);
         setTop(topToolBar);
 
         errorLabel.setTextFill(Color.RED);
@@ -189,11 +196,20 @@ public class RickAndMortyUI extends BorderPane
             {
                 statusFilter.setVisible(true);
                 statusLabel.setVisible(true);
+                locationSearchLabel.setVisible(false);
+                locationSearchField.setVisible(false);
+            } else if (newTab == locTab)
+            {
+                statusFilter.setVisible(false);
+                statusLabel.setVisible(false);
+                locationSearchLabel.setVisible(true);
+                locationSearchField.setVisible(true);
             } else
             {
                 statusFilter.setVisible(false);
                 statusLabel.setVisible(false);
-
+                locationSearchLabel.setVisible(false);
+                locationSearchField.setVisible(false);
             }
         });
         btnThemeToggle.setOnMouseClicked(event ->
@@ -239,6 +255,16 @@ public class RickAndMortyUI extends BorderPane
             {
                 if (newVal == null || newVal.equals("All")) return true;
                 return character.getStatus().equalsIgnoreCase(newVal);
+            });
+        });
+
+        locationSearchField.textProperty().addListener((obs, oldVal, newVal) ->
+        {
+            Logger.log("INFO", "Location search: " + newVal);
+            locFiltered.setPredicate(location ->
+            {
+                if (newVal == null || newVal.isEmpty()) return true;
+                return location.getName().toLowerCase().contains(newVal.toLowerCase());
             });
         });
 

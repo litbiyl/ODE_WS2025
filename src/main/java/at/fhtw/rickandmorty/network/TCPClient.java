@@ -12,7 +12,6 @@ import java.io.PrintWriter;
 import java.net.SocketTimeoutException;
 
 public class TCPClient {
-    private static final int CONNECT_TIMEOUT = 5000;
     private static final int READ_TIMEOUT = 10000;
 
     public static String get(String host, int port, String path) {

@@ -183,7 +183,6 @@ public class RickAndMortyUI extends BorderPane
 
         tabPane.getSelectionModel().selectedItemProperty().addListener((obs, oldTab, newTab) ->
         {
-            // log which tab the user switched to
             Logger.log("INFO", "Tab changed to: " + newTab.getText());
 
             if (newTab == charTab)

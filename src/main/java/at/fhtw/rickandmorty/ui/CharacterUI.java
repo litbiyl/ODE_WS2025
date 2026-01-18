@@ -15,19 +15,21 @@ import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CharacterUI {
     public void openCharacterWindow(Character c, ObservableList<Episode> epData, List<String> style) {
         Stage charStage = new Stage();
         charStage.setTitle("Character Sheet");
+        charStage.getIcons().add(
+                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/media/appicon.png")))
+        );
 
         ImageView charImage = new ImageView();
         charImage.setFitWidth(100);
         charImage.setFitHeight(100);
         charImage.setPreserveRatio(true);
         charImage.setImage(new Image(c.getImage(), false));
-
-        String epNames = "";
 
         Label lblName = new Label("Name: " + c.getName());
         Label lblStatus = new Label("Status: " + c.getStatus());

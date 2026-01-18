@@ -9,15 +9,21 @@ import at.fhtw.rickandmorty.series.Episode;
 import at.fhtw.rickandmorty.series.Location;
 import at.fhtw.rickandmorty.series.World;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.geometry.Insets;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 
+import java.awt.*;
 import java.util.List;
 
 import static at.fhtw.rickandmorty.network.ApiConstants.*;
@@ -31,6 +37,7 @@ public class RickAndMortyUI extends BorderPane
 
     private final PageDataSerde pageSerde = new PageDataSerde();
     private boolean isDarkMode = false;
+
     private final TableView<Character> charTable = new TableView<>();
     private final ObservableList<Character> charData = FXCollections.observableArrayList();
     private final FilteredList<Character> charFiltered = new FilteredList<>(charData, p -> true);
@@ -43,6 +50,11 @@ public class RickAndMortyUI extends BorderPane
     private final TableView<Location> locTable = new TableView<>();
     private final ObservableList<Location> locData = FXCollections.observableArrayList();
     private final SortedList<Location> locSorted = new SortedList<>(locData);
+
+    Label charStatusLabel = new Label("Characters loaded (0/?)");
+    Label epStatusLabel = new Label("Episodes loaded (0/?)");
+    Label locStatusLabel = new Label("Locations loaded (0/?)");
+    Label errorLabel = new Label("Placeholder error text");
 
     public RickAndMortyUI()
     {
@@ -57,17 +69,21 @@ public class RickAndMortyUI extends BorderPane
         ChoiceBox<String> statusFilter = new ChoiceBox<>();
         statusFilter.getItems().addAll("All", "Alive", "Dead", "unknown");
         statusFilter.setValue("All");
-        Label statusLabel = new Label("Character Status");
 
-        Pane spacer = new Pane();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        ToolBar topToolBar = new ToolBar( statusLabel, statusFilter, spacer, btnThemeToggle);
+        Pane topSpacer = new Pane();
+        HBox.setHgrow(topSpacer, Priority.ALWAYS);
+        Label statusLabel = new Label("Character Status");
+        ToolBar topToolBar = new ToolBar(statusLabel, statusFilter, topSpacer, btnThemeToggle);
         setTop(topToolBar);
 
-        // possible error message box
-        ToolBar bottomToolBar = new ToolBar(new Pane());
-        bottomToolBar.setPrefHeight(30);
-        setBottom(bottomToolBar);
+        errorLabel.setTextFill(Color.RED);
+        errorLabel.setId("errorLabel");
+        Pane bottomSpacer = new Pane();
+        HBox.setHgrow(bottomSpacer, Priority.ALWAYS);
+        HBox bottomBar = new HBox(charStatusLabel, epStatusLabel, locStatusLabel, bottomSpacer, errorLabel);
+        bottomBar.setSpacing(80);
+        bottomBar.setPadding(new Insets(10, 30, 10, 30));
+        setBottom(bottomBar);
 
         TabPane tabPane = new TabPane();
 
@@ -278,9 +294,10 @@ public class RickAndMortyUI extends BorderPane
         {
             try
             {
-                fetchPage(API_HOST, API_PORT, CHARACTER_PATH, charData, charSerde);
+                fetchPage(CHARACTER_PATH, charData, charSerde, charStatusLabel, "Characters");
             } catch (Exception e)
             {
+                errorLabel.setText("ERROR: " + e.getMessage());
                 Logger.log("ERROR", "Failed to fetch characters: " + e.getMessage());
             }
         });
@@ -289,7 +306,7 @@ public class RickAndMortyUI extends BorderPane
         {
             try
             {
-                fetchPage(API_HOST, API_PORT, EPISODE_PATH, epData, epSerde);
+                fetchPage(EPISODE_PATH, epData, epSerde, epStatusLabel, "Episodes");
             } catch (Exception e)
             {
                 Logger.log("ERROR", "Failed to fetch episodes: " + e.getMessage());
@@ -300,7 +317,7 @@ public class RickAndMortyUI extends BorderPane
         {
             try
             {
-                fetchPage(API_HOST, API_PORT, LOCATION_PATH, locData, locSerde);
+                fetchPage(LOCATION_PATH, locData, locSerde, locStatusLabel, "Locations");
             } catch (Exception e)
             {
                 Logger.log("ERROR", "Failed to fetch locations: " + e.getMessage());
@@ -317,9 +334,9 @@ public class RickAndMortyUI extends BorderPane
         locThread.start();
     }
 
-    private <T extends World> void fetchPage(String baseURL, int port, String path, ObservableList<T> oList, Serde<T> serde) {
+    private <T extends World> void fetchPage(String path, ObservableList<T> oList, Serde<T> serde, Label statusLabel, String statusPrefix) {
 
-        String response = TCPClient.get(baseURL, port, path);
+        String response = TCPClient.get(API_HOST, API_PORT, path);
         String json = extractJson(response);
         if (json == null){
             return;
@@ -327,13 +344,23 @@ public class RickAndMortyUI extends BorderPane
 
         PageData meta = pageSerde.deserializePageData(json);
         int pageCount = meta.getPages();
+        int itemCount = meta.getCount();
+
+        Platform.runLater(() -> {
+            statusLabel.setText(statusPrefix + " loaded " + "(0/" + itemCount + ")");
+        });
 
         List<T> entities = serde.deserializeJsonList(json);
         oList.addAll(entities);
         entities.clear();
 
+        Platform.runLater(() -> {
+            statusLabel.setText(statusPrefix + " loaded " + "(" + oList.size() + "/" + itemCount + ")");
+        });
+
+
         for (int i = 2; i <= pageCount; i++) {
-            response = TCPClient.get(baseURL, port, path + "/?page=" + i);
+            response = TCPClient.get(API_HOST, API_PORT, path + "/?page=" + i);
             json = extractJson(response);
             if (json == null) {
                 continue;
@@ -342,7 +369,10 @@ public class RickAndMortyUI extends BorderPane
             entities = serde.deserializeJsonList(json);
             oList.addAll(entities);
             entities.clear();
+
+            Platform.runLater(() -> {
+                statusLabel.setText(statusPrefix + " loaded " + "(" + oList.size() + "/" + itemCount + ")");
+            });
         }
     }
-
 }

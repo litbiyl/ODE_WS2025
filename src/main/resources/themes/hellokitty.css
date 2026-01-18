@@ -27,3 +27,5 @@
 {
     -fx-text-fill: #ff69b4;
 }
+
+#errorLabel { -fx-text-fill: #ff0000; }

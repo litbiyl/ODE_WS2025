@@ -8,14 +8,19 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetSocketAddress;
 
 public class TCPClient {
+    private static final int CONNECT_TIMEOUT = 5000;
 
     public static String get(String host, int port, String path) {
         try {
             SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
 
             try (SSLSocket socket = (SSLSocket) factory.createSocket(host, port)) {
+
+                //socket.connect(new InetSocketAddress(host, port), CONNECT_TIMEOUT);
+
                 PrintWriter writer = new PrintWriter(new OutputStreamWriter(socket.getOutputStream()),true);
 
                 writer.println("GET " + path + " HTTP/1.1");

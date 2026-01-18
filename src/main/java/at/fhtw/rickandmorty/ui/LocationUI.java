@@ -8,16 +8,21 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SplitPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class LocationUI {
     public void openLocationWindow(Location l, ObservableList<Character> charData, List<String> style) {
         Stage locStage = new Stage();
         locStage.setTitle("Location Sheet");
+        locStage.getIcons().add(
+                new Image(Objects.requireNonNull(getClass().getResourceAsStream("/media/appicon.png")))
+        );
 
         Label lblName = new Label("Name: " + l.getName());
         Label lblType = new Label("Type: " + l.getType());

@@ -8,3 +8,5 @@
 .label { -fx-text-fill: #111111; }
 
 .table-view { -fx-background-color: -fx-background; }
+
+#errorLabel { -fx-text-fill: #ff0000; }

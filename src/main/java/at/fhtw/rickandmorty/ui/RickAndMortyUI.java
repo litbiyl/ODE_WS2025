@@ -8,6 +8,7 @@ import at.fhtw.rickandmorty.series.Character;
 import at.fhtw.rickandmorty.series.Episode;
 import at.fhtw.rickandmorty.series.Location;
 import at.fhtw.rickandmorty.series.World;
+
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,16 +20,11 @@ import javafx.scene.layout.*;
 
 import java.util.List;
 
+import static at.fhtw.rickandmorty.network.ApiConstants.*;
 import static at.fhtw.rickandmorty.network.HTTPResponse.extractJson;
 
 public class RickAndMortyUI extends BorderPane
 {
-    private static final int API_PORT = 443;
-    private static final String API_HOST = "rickandmortyapi.com";
-    private static final String CHARACTER_PATH = "/api/character";
-    private static final String EPISODE_PATH = "/api/episode";
-    private static final String LOCATION_PATH = "/api/location";
-
     private final Serde<Character> charSerde = new CharacterSerde();
     private final Serde<Episode> epSerde = new EpisodeSerde();
     private final Serde<Location> locSerde = new LocationSerde();

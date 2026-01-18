@@ -14,16 +14,6 @@ public class CharacterSerde implements Serde<Character> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public Character deserializeJson(String json) {
-        try {
-            return mapper.readValue(json, Character.class);
-        } catch(JsonProcessingException e) {
-            Logger.log("ERROR", "Failed to deserialize character: " + e.getMessage());
-            throw new UnsupportedOperationException("Failed to deserialize character");
-        }
-    }
-
-    @Override
     public List<Character> deserializeJsonList(String json) {
         try {
             JsonNode results = mapper.readTree(json).get("results");

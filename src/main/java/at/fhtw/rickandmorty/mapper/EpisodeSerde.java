@@ -14,16 +14,6 @@ public class EpisodeSerde implements Serde<Episode> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public Episode deserializeJson(String json) {
-        try {
-            return mapper.readValue(json, Episode.class);
-        } catch(JsonProcessingException e) {
-            Logger.log("ERROR", "Failed to deserialize episode: " + e.getMessage());
-            throw new UnsupportedOperationException("Failed to deserialize episode");
-            }
-    }
-
-    @Override
     public List<Episode> deserializeJsonList(String json) {
         try {
             JsonNode results = mapper.readTree(json).get("results");

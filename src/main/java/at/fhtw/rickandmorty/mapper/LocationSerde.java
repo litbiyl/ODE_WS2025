@@ -14,16 +14,6 @@ public class LocationSerde implements Serde<Location> {
     private final ObjectMapper mapper = new ObjectMapper();
 
     @Override
-    public Location deserializeJson(String json) {
-        try {
-            return mapper.readValue(json, Location.class);
-        } catch(JsonProcessingException e) {
-            Logger.log("ERROR", "Failed to deserialize location: " + e.getMessage());
-            throw new UnsupportedOperationException("Failed to deserialize location");
-        }
-    }
-
-    @Override
     public List<Location> deserializeJsonList(String json) {
         try {
             JsonNode results = mapper.readTree(json).get("results");

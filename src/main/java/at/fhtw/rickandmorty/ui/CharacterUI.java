@@ -37,6 +37,11 @@ public class CharacterUI {
         Label lblLocation = new Label("Location: " + c.getLocation().getName());
         Label lblEpisodes = new Label("Episodes:");
 
+        Label lblType = null;
+        if (c.getType() != null && !c.getType().isEmpty()) {
+            lblType = new Label("Type: " + c.getType());
+        }
+
         ListView<String> epList = new ListView<>();
         epList.setFocusTraversable(false);
 
@@ -58,6 +63,10 @@ public class CharacterUI {
 
         VBox sheetBox = new VBox(10, charImage, lblName, lblStatus, lblSpecies, lblGender, lblOrigin, lblLocation, lblEpisodes, epList);
         sheetBox.setPadding(new Insets(10));
+
+        if (lblType != null) {
+            sheetBox.getChildren().add(4, lblType);
+        }
         VBox epBox = new VBox(10, lblEpisodes, epList);
         epBox.setPadding(new Insets(10));
         SplitPane splitPane = new SplitPane(sheetBox, epBox);

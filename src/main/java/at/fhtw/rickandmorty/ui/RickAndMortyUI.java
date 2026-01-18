@@ -54,7 +54,7 @@ public class RickAndMortyUI extends BorderPane
     Label charStatusLabel = new Label("Characters loaded (0/?)");
     Label epStatusLabel = new Label("Episodes loaded (0/?)");
     Label locStatusLabel = new Label("Locations loaded (0/?)");
-    Label errorLabel = new Label("Placeholder error text");
+    Label errorLabel = new Label();
 
     public RickAndMortyUI()
     {

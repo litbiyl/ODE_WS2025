@@ -18,12 +18,12 @@ public class CharacterSerde implements Serde<Character> {
         try {
             JsonNode results = mapper.readTree(json).get("results");
             return mapper.readerForListOf(Character.class).readValue(results);
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             Logger.log("ERROR", "Failed to deserialize character list: " + e.getMessage());
-            throw new UnsupportedOperationException("Failed to deserialize character list");
+            throw new RuntimeException("Failed to deserialize character list", e);
         } catch (IOException e) {
             Logger.log("ERROR", "Failed to read character list: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to read character list", e);
         }
     }
 }

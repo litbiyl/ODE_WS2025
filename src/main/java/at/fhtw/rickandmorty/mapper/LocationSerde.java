@@ -18,12 +18,12 @@ public class LocationSerde implements Serde<Location> {
         try {
             JsonNode results = mapper.readTree(json).get("results");
             return mapper.readerForListOf(Location.class).readValue(results);
-        } catch(JsonProcessingException e) {
+        } catch (JsonProcessingException e) {
             Logger.log("ERROR", "Failed to deserialize location list: " + e.getMessage());
-            throw new UnsupportedOperationException("Failed to deserialize location list");
+            throw new RuntimeException("Failed to deserialize location list", e);
         } catch (IOException e) {
             Logger.log("ERROR", "Failed to read location list: " + e.getMessage());
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to read location list", e);
         }
     }
 }

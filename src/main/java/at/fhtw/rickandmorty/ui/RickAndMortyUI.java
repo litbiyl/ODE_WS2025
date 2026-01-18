@@ -296,9 +296,9 @@ public class RickAndMortyUI extends BorderPane
             try
             {
                 fetchPage(CHARACTER_PATH, charData, charSerde, charStatusLabel, "Characters");
-            } catch (Exception e)
+            } catch (RuntimeException e)
             {
-                errorLabel.setText("ERROR: " + e.getMessage());
+                Platform.runLater(() -> errorLabel.setText("ERROR: " + e.getMessage()));
                 Logger.log("ERROR", "Failed to fetch characters: " + e.getMessage());
             }
         });
@@ -308,8 +308,9 @@ public class RickAndMortyUI extends BorderPane
             try
             {
                 fetchPage(EPISODE_PATH, epData, epSerde, epStatusLabel, "Episodes");
-            } catch (Exception e)
+            } catch (RuntimeException e)
             {
+                Platform.runLater(() -> errorLabel.setText("ERROR: " + e.getMessage()));
                 Logger.log("ERROR", "Failed to fetch episodes: " + e.getMessage());
             }
         });
@@ -319,8 +320,9 @@ public class RickAndMortyUI extends BorderPane
             try
             {
                 fetchPage(LOCATION_PATH, locData, locSerde, locStatusLabel, "Locations");
-            } catch (Exception e)
+            } catch (RuntimeException e)
             {
+                Platform.runLater(() -> errorLabel.setText("ERROR: " + e.getMessage()));
                 Logger.log("ERROR", "Failed to fetch locations: " + e.getMessage());
             }
         });
